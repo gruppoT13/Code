@@ -3,7 +3,7 @@ const Ingredienti = require('../models/ingrediente');
 
 // POST '/ingrediente'
 const add_ingrediente = (req, res) => {
-    //check if the tea name already exists in db
+    //check if the ingrediente name already exists in db
     Ingredienti.findOne({ nome: req.body.nome }, (err, data) => {
         //if ingr. not in db, add it
         if (!data) {
@@ -29,32 +29,56 @@ const add_ingrediente = (req, res) => {
 // DELETE '/ingrediente'
 
 const delete_ingrediente = (req, res, next) => {
-    Ingrediente.findOne({ nome: req.body.nome }, (err, data) => {
-        if(data) {
-            
+    
+    let input_nome = req.params.nome;
+    var query = { nome: input_nome };
+
+    Ingredienti.deleteOne(query, (err, collection) => {
+        if (err) {
+            throw err;
         }
-        else{
-            
+        else {
+            console.log("Ingrediente deleted successfully");
+            res.json({ message: "DELETE 1 ingrediente" });
         }
-    })
+
+    });
 
 }
 
 // GET '/ingrediente.prezzo'
 const show_Prezzo = (req, res, next) => {
-    // Ingredienti.find({}, (err, data)=>{
-    //     if (err){
-    //         return res.json({Error: err});
-    //     }
-    //     return res.json(data);
-    // })
+    let input_nome = req.params.nome; //get the ingrediente name
+    // console.log(nome);
+
+    //find the specific ingrediente with that name
+    Ingredienti.findOne({ nome: input_nome }, (err, data) => {
+        if (err || !data) {
+            return res.json({ message: "Ingrediente doesn't exist." });
+        }
+        else return res.json(data); //return the ingrediente object if found
+    });
 }
 
 
 // PATCH '/ingrediente.prezzo'
 const edit_prezzo_ingrediente = (req, res, next) => {
-    console.log("Edit Prezzo Ingrediente");
-    res.json({ message: "PATCH ingrediente.prezzo" });
+    let input_nome = req.params.nome; //get the ingrediente name
+    let input_prezzo = req.params.prezzo; //get the ingrediente name
+    // console.log(input_prezzo);
+
+    //find the specific ingrediente with that name
+    Ingredienti.findOne({ nome: input_nome }, (err, data) => {
+        if (err || !data) {
+            return res.json({ message: "Ingrediente doesn't exist." });
+        }
+        else{
+            // prezzo: input_prezzo;
+
+            return res.json(data); 
+        } 
+            
+    });
 }
 
 
