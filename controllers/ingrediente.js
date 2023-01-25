@@ -1,39 +1,34 @@
 
-const Ingrediente = require('../models/ingrediente');
+const Ingredienti = require('../models/ingrediente');
 
 // POST '/ingrediente'
-const add_ingrediente = async (req, res, next) => {
+const add_ingrediente = (req, res) => {
+    //check if the tea name already exists in db
+    Ingredienti.findOne({ nome: req.body.nome }, (err, data) => {
+        //if ingr. not in db, add it
+        if (!data) {
+            //create a new ingr. object using the Ingrediente model and req.body
+            const newIngrediente = new Ingredienti({
+                nome: req.body.nome,
+                prezzo: req.body.prezzo,
+            })
 
-    const ingrediente = await Ingrediente.findOne({ 
-        
-        where: {
-            nome: req.body.nome,
-        },
-    });
-       
-    // nuova risorsa
-    if(!ingrediente) {
-        const newIngrediente = new Ingrediente({
-            nome: req.body.nome,
-            prezzo: req.body.prezzo
-        })
-
-        newIngrediente.save((err, data) => {
-            if(err) 
-                return res.json({ Error: err });
-            return res.json({message: "201 OK - Ingrediente inserito", data});   // inserire 201 OK
-        })
-    }
-    else{
-        if(err) 
-            return res.json({ Error: err });
-        return res.json({message: "Ingrediente already exists"})
-    }
+            // save this object to database
+            newIngrediente.save((err, data) => {
+                if (err) return res.json({ Error: err });
+                return res.json(data);
+            })
+            //if there's an error or the ingr. is in db, return a message         
+        } else {
+            if (err) return res.json(`Something went wrong, please try again. ${err}`);
+            return res.json({ message: "Ingrediente already exists" });
+        }
+    })
 };
 
 // DELETE '/ingrediente'
+
 const delete_ingrediente = (req, res, next) => {
-    /*
     Ingrediente.findOne({ nome: req.body.nome }, (err, data) => {
         if(data) {
             
@@ -41,13 +36,18 @@ const delete_ingrediente = (req, res, next) => {
         else{
             
         }
-    })   */
+    })
+
 }
 
 // GET '/ingrediente.prezzo'
 const show_Prezzo = (req, res, next) => {
-    console.log("Mostra Prezzo Ingrediente");
-    res.json({ message: "GET ingrediente.prezzo" });
+    // Ingredienti.find({}, (err, data)=>{
+    //     if (err){
+    //         return res.json({Error: err});
+    //     }
+    //     return res.json(data);
+    // })
 }
 
 
